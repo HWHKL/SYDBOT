@@ -1,6 +1,8 @@
 
 HoshinoBot 的功能开发以服务 [公主连结☆Re:Dive](http://priconne-redive.jp) 玩家为核心
 
+#这玩意现在超级乱的，我res也没传ε=ε=ε=┏(゜ロ゜;)┛
+
 
 
 

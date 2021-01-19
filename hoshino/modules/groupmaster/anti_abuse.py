@@ -63,9 +63,10 @@ async def hb_handler(ctx):
 # ============================================ #
 
 BANNED_WORD = (
-    'rbq', 'RBQ', '憨批', '废物', '死妈', '崽种', '傻逼', '傻逼玩意',
-    '没用东西', '傻B', '傻b', 'SB', 'sb', '煞笔', 'cnm', 'kkp',
-    'nmsl', 'D区', '口区', '我是你爹', 'nmbiss', '弱智', '给爷爬', '杂种爬'
+    'rbq', 'RBQ', '废物', '死妈', '崽种', '傻逼', '傻逼玩意',
+	'没用东西', '傻B', '傻b', 'SB', 'sb', '煞笔', 'cnm', 
+	'nmsl', 'D区', '口区', '我是你爹', 'nmbiss', '弱智', '给爷爬', '杂种爬', '滚',
+	'给爷滚', '给老子滚', '给老子爬'
 )
 @on_command('ban_word', aliases=BANNED_WORD, only_to_me=True)
 async def ban_word(session):

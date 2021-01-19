@@ -16,7 +16,7 @@ class auth_config(object):
 
     # -------------------事件过滤器---------------------
     # 事件过滤器配置文件的地址,例如/root/go-cqhttp/filter.json(必须填写)
-    EVENT_FILTER = r'C:/XCW/miraiGO/filter.json'
+    EVENT_FILTER = r'C:\bot\miraiGO\filter.json'
 
 
 # -------------------数据互通---------------------

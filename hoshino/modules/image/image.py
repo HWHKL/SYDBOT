@@ -10,7 +10,7 @@ except:
 
 logger = log.new_logger('image')
 
-SAUCENAO_KEY = "" # SauceNAO 的 API key
+SAUCENAO_KEY = "7e9b54f6609031784daa135d31a50545745f007e" # SauceNAO 的 API key
 TIMELIMIT_IMAGE = 7 # 识图功能的时间限制
 
 class SauceNAO():

@@ -23,8 +23,11 @@ from . import locked
 from hoshino import Service  # 如果使用hoshino的分群管理取消注释这行
 
 #
-sv = Service('工会排名2', visible= True, enable_on_default= False, bundle='工会排名2', help_='''
-无说明,不要和工会排名同时开启
+sv = Service('工会排名', visible= True, enable_on_default= False, bundle='工会排名', help_='''
+会战排行  | 查询公会名或排行 | 会战排行K.A. <br>会战排行1000
+会战锁定  | 锁定后根据设定自动推送排行信息<br>并且会自动记录上次的排行信息做比较 | 会战锁定K.A.
+会战解锁 | 解锁一个被锁定的公会 | 会战解锁K.A.
+公会排行 | 查询当前锁定的公会 | 公会排行
 '''.strip())
 
 # 初始化配置文件

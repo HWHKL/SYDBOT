@@ -2,7 +2,7 @@ import os
 import sqlite3
 import math
 from datetime import datetime,timedelta
-
+import re
 from nonebot import get_bot 
 
 import hoshino
@@ -14,7 +14,7 @@ sv = Service('会战辅助', visible= True, enable_on_default= True, bundle='会
 '''.strip())
 
 ###挂树部分
-@sv.on_command('挂树')
+@sv.on_command('挂树',aliases=(r'挂树(.*)'))
 async def climb_tree(session):
     #获取上树成员以及其所在群信息
     ctx = session.ctx
@@ -28,7 +28,7 @@ async def climb_tree(session):
     for row in query:
         is_ontree = row[0]
     if(is_ontree==1):
-        msg = f'>>>挂树计时提醒[!]\n[CQ:at,qq={user_id}]已经挂树\n请勿重复上树'
+        msg = f'>>>挂树计时提醒[!]\n[CQ:at,qq={user_id}]已经挂树，请勿重复上树'
     else:
         climb_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         climb_stime = datetime.now().strftime("%H:%M:%S")
@@ -37,7 +37,7 @@ async def climb_tree(session):
         cur.execute(f"INSERT INTO tree VALUES(NULL,{user_id},{group_id},\"{loss_time}\")")
         con.commit()
         con.close()
-        msg = f'>>>挂树计时提醒\n[CQ:at,qq={user_id}]开始挂树\n因上报时间与游戏时间存在误差\n挂树时长按照55分钟计算\n开始时间:{climb_stime}\n下树期限:{loss_stime}\n距离下树期限(约)10分钟时会连续提醒您三次\n如果没有人帮助请及时下树\n发送"取消挂树"可取消提醒'
+        msg = f'>>>挂树计时[CQ:at,qq={user_id}]开始挂树\n开始时间:{climb_stime}\n下树期限:{loss_stime}发送"取消挂树"取消提醒'
     await session.send(msg)
 
 @sv.on_command('取消挂树')
@@ -54,7 +54,7 @@ async def down_tree(session):
     for row in query:
         is_ontree = row[0]
     if(is_ontree==0):
-        msg = f'>>>挂树计时提醒[!]\n[CQ:at,qq={user_id}]尚未挂树\n请勿申请下树'
+        msg = f'>>>挂树计时提醒[!]\n[CQ:at,qq={user_id}]尚未挂树'
     else:
         cur.execute(f"DELETE FROM tree WHERE qqid={user_id} AND gid={group_id}")
         con.commit()

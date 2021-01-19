@@ -4,12 +4,9 @@ from hoshino.typing import CQEvent
 sv = Service('_help_', manage_priv=priv.SUPERUSER, visible=False)
 
 TOP_MANUAL = '''
-=====================
-- hoshino_xcw使用说明 -
-=====================
-发送方括号[]内的关键词即可触发
+
 ※功能采取模块化管理，群管理可控制开关
-[lssv] 查看功能表
+[lssv] 查看功能表（群管理限定）
 ※发送以下关键词查看功能的具体帮助：
 [帮助XXX] XXX为的功能的名字
 ※发送[开启 XXX] 可以开启XXX功能

@@ -2,38 +2,40 @@ import os
 import random
 import re
 import urllib
-import requests
 
+import aiohttp
+import hoshino
+import requests
+from hoshino import R, Service, priv, util
+from hoshino.typing import CQEvent
+from hoshino.util import DailyNumberLimiter, FreqLimiter
 from nonebot import on_command
 from nonebot.exceptions import CQHttpError
 
-from hoshino import R, Service, priv, util
-from hoshino.typing import CQEvent
+RDIR = os.path.expanduser(HOSHINO_RES_PATH)
 
-from hoshino.util import FreqLimiter, DailyNumberLimiter
-
-_max = 2
+_max = 1
 EXCEED_NOTICE = f'惠惠今天已经使用了{_max}次爆裂魔法哦~~~明天再使用爆裂魔法吧!'
 _nlmt = DailyNumberLimiter(_max)
 
-sv = Service('来一发', visible= False, enable_on_default= True, bundle='来一发', help_='''
-- [来一发]
-'''.strip())
+sv = Service('explosion', visible=True,
+             manage_priv=priv.ADMIN, enable_on_default=True)
 
 EXPLOSION_HELP = '''
 “エクスプロージョン（Explosion）！”
 和惠惠每天练习爆裂魔法吧！
 '''.strip()
 
+
 @sv.on_fullmatch(('explosion帮助', 'explosion幫助'))
 async def explosion_help(bot, ev: CQEvent):
-        await bot.send(ev, EXPLOSION_HELP)
+    await bot.send(ev, EXPLOSION_HELP)
 #=====================#
-#从hoshino的setu魔改而来
-#有更好的实现方式或者建议要提出请访问nogkdmoreghs.cn/wordpress/
+# 从hoshino的setu魔改而来
+# 有更好的实现方式或者建议要提出请访问nogkdmoreghs.cn/wordpress/
 #基于GPL3.0协议开源#
 #=====================#
-'''explosion_folder = "C:/XCW/res/explorion-voice/explosion/"
+'''explosion_folder = "C:/Resources/MEGUMIN/explosion/"
 
 @sv.on_fullmatch(('爆裂魔法', '来一发', '爆烈魔法', '暴烈魔法'))
 async def explosion(bot, ev):
@@ -49,7 +51,7 @@ async def explosion(bot, ev):
     _nlmt.increase(uid)
 
     try:
-        await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+        await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
     except CQHttpError:
         sv.logger.error(f"发送爆裂魔法失败")
         try:
@@ -104,62 +106,62 @@ async def exosend(bot, ev):
         if r == '1':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵1.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵1.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text1)
         if r == '2':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵2.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵2.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text2)
         if r == '3':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵3.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵3.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text3)
         if r == '4':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵4.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵4.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text4)
         if r == '5':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵5.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵5.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text5)
         if r == '6':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵6.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
-            await bot.send(ev, text6)    
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵6.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
+            await bot.send(ev, text6)
         if r == '7':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵7.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵7.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text7)
         if r == '8':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵8.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵8.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text8)
         if r == '9':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵9.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵9.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text9)
         if r == '10':
             uid = ev['user_id']
             _nlmt.increase(uid)
-            path = 'C:/XCW/res/explorion-voice/explosion/施法吟诵10.mp3'
-            await bot.send(ev, f'[CQ:record,file=file:///{path}]')
+            path = os.path.join(RDIR, "explosion-voice/explosion/施法吟诵10.silk")
+            await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
             await bot.send(ev, text10)
 #↑↑↑有文字的爆裂魔法。↑↑↑#
 #↑↑↑有点麻烦的是，要添加或者更改语音要专门改路径和文本。↑↑↑#
@@ -169,20 +171,7 @@ async def exosend(bot, ev):
 async def exexplo(bot, ev: CQEvent):
     uid = ev['user_id']
     _nlmt.reset(uid)
+    path = os.path.join(RDIR, "explosion-voice/没有拒绝的理由吧.silk")
+    await bot.send(ev, f'[CQ:record,file={os.path.abspath(file_path)}]')
     await bot.send(ev, f"谢谢你的魔力！我感觉又可以来一发了呢~")
 #↑↑↑从hoshino的氪金魔改来的补魔。去除了权限限制，是个人都能补魔。↑↑↑#
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

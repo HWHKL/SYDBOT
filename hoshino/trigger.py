@@ -28,7 +28,7 @@ class PrefixTrigger(BaseTrigger):
             hoshino.logger.warning(f'Failed to add prefix trigger `{prefix}`: Conflicts between {sf.__name__} and {other.__name__}')
             return
         self.trie[prefix] = sf
-        hoshino.logger.debug(f'Succeed to add prefix trigger `{prefix}`')
+        hoshino.logger.debug(f'Succeeded in adding prefix trigger `{prefix}`')
 
 
     def find_handler(self, event: CQEvent):
@@ -64,7 +64,7 @@ class SuffixTrigger(BaseTrigger):
             hoshino.logger.warning(f'Failed to add suffix trigger `{suffix}`: Conflicts between {sf.__name__} and {other.__name__}')
             return
         self.trie[suffix_r] = sf
-        hoshino.logger.debug(f'Succeed to add suffix trigger `{suffix}`')
+        hoshino.logger.debug(f'Succeeded in adding suffix trigger `{suffix}`')
 
 
     def find_handler(self, event: CQEvent):
@@ -101,7 +101,7 @@ class KeywordTrigger(BaseTrigger):
             hoshino.logger.warning(f'Failed to add keyword trigger `{keyword}`: Conflicts between {sf.__name__} and {other.__name__}')
             return
         self.allkw[keyword] = sf
-        hoshino.logger.debug(f'Succeed to add keyword trigger `{keyword}`')
+        hoshino.logger.debug(f'Succeeded in adding keyword trigger `{keyword}`')
 
 
     def find_handler(self, event: CQEvent) -> "ServiceFunc":
@@ -122,7 +122,7 @@ class RexTrigger(BaseTrigger):
     
     def add(self, rex: re.Pattern, sf: "ServiceFunc"):
         self.allrex[rex] = sf
-        hoshino.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
+        hoshino.logger.debug(f'Succeeded in adding rex trigger `{rex.pattern}`')
 
 
     def find_handler(self, event: CQEvent) -> "ServiceFunc":

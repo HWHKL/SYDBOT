@@ -14,7 +14,7 @@ from . import Process_Monitor
 如: ANTI_CONCURRENCY_GROUPS = [['猜头像', '猜角色'], ['完美配对', '神经衰弱']]
 表示"猜头像"指令不能和"猜角色"指令并发, "完美配对"指令不能和"神经衰弱"指令并发
 """
-ANTI_CONCURRENCY_GROUPS = [['猜头像', '猜角色', '完美配对', '神经衰弱','rs','开枪','原神一井','猜从者']]
+ANTI_CONCURRENCY_GROUPS = [['猜头像', '猜角色', '完美配对', '神经衰弱','rs','开枪','猜从者']]
 # 是否允许同一条指令自己和自己并发
 SELF_CONCURRENCY = False
 # HoshinoBot的触发器字典，一般不用修改

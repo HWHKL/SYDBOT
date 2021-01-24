@@ -1,4 +1,4 @@
-#jb同步
+#JB同步
 .idea/
 #个人信息
 config/
@@ -6,3 +6,10 @@ authMS/
 yobot/
 pcrjjc/
 pages/
+hoshino/modules/deepchat/
+db.json
+database.json
+*.db
+*.sqlite
+config.py
+config.json

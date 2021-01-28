@@ -9,8 +9,32 @@ from hoshino import R, Service, priv, util
 from nonebot import NoticeSession
 
 
-sv = Service('groupchat', enable_on_default=True)
 lmt = util.DailyNumberLimiter(5)
+
+sv_help = '''
+迫害龙王  ;当前龙王  ;龙王排行榜
+群地位       |查看自己的群地位
+戳一戳@群友  |让bot戳他
+@bot夸我     |bot送你礼物哦
+来点鸡汤;今日一言
+跟我学+内容  |让bot发这句话的语音
+合刀         |合刀 第一刀伤害 第二刀伤害 boss血量
+'''.strip()
+
+sv = Service(
+        name = '水群助手',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = False, #是否默认启用
+        bundle = '水群助手', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助水群助手"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
+
 
 
 @sv.on_fullmatch('迫害龙王')
@@ -27,6 +51,17 @@ async def who_is_longwang(bot, ev):
     msg = f'{at}\n{img.cqcode}'
     await bot.send(ev, msg)
 
+@sv.on_fullmatch(('群地位',))
+async def show_group_role(bot, event):
+	if not priv.check_priv(event, priv.SUPERUSER):
+		return
+	me = await bot.get_login_info()
+	gid = event.group_id
+	uid = me['user_id']
+	name = me['nickname']
+	info = await bot.get_group_member_info(group_id=event.group_id, user_id=uid)
+	role = info['role']
+	await bot.send(event, f'{name}在此群的地位是{role}')
 
 @sv.on_notice('notify')
 async def new_longwang(session: NoticeSession):
@@ -120,22 +155,6 @@ async def set_group_title(bot, ctx):
         await bot.send(ctx, f'申请头衔{msg}失败了')
 
 
-@sv.on_prefix('禁言')
-async def ban_user(bot, event):
-    gid = event.group_id
-    u_priv = priv.get_user_priv(event)
-    if u_priv < sv.manage_priv:
-        return
-    msg = event.message.extract_plain_text().strip()
-    if not msg:
-        return
-    try:
-        uid = int(msg)
-        await bot.set_group_ban(group_id=gid, user_id=uid, duration=60)
-        await bot.send(event, '我好了')
-    except Exception as ex:
-        sv.logger.exception(ex)
-        # await bot.send(event, '禁言...禁言它失败了')
 
 
 @sv.on_fullmatch('夸我', only_to_me=True)

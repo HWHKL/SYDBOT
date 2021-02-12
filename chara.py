@@ -10,9 +10,7 @@ import hoshino
 from hoshino import R, log, sucmd, util
 from hoshino.typing import CommandSession
 
-
-from . import _pcr_data_duel
-
+from . import _pcr_data
 
 logger = log.new_logger('chara', hoshino.config.DEBUG)
 UNKNOWN = 1000
@@ -41,9 +39,9 @@ class Roster:
         self.update()
     
     def update(self):
-        importlib.reload(_pcr_data_duel)
+        importlib.reload(_pcr_data)
         self._roster.clear()
-        for idx, names in _pcr_data_duel.CHARA_NAME.items():
+        for idx, names in _pcr_data.CHARA_NAME.items():
             for n in names:
                 n = util.normalize_str(n)
                 if n not in self._roster:
@@ -137,7 +135,7 @@ class Chara:
 
     @property
     def name(self):
-        return _pcr_data_duel.CHARA_NAME[self.id][0] if self.id in _pcr_data_duel.CHARA_NAME else _pcr_data_duel.CHARA_NAME[UNKNOWN][0]
+        return _pcr_data.CHARA_NAME[self.id][0] if self.id in _pcr_data.CHARA_NAME else _pcr_data.CHARA_NAME[UNKNOWN][0]
 
     @property
     def is_npc(self) -> bool:

@@ -13,3 +13,5 @@ database.json
 *.sqlite
 config.py
 config.json
+requirements.txt
+requirements.txt

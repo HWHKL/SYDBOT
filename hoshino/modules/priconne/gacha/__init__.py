@@ -21,9 +21,19 @@ sv_help = '''
 [@Bot来一井] 4w5钻！
 [查看卡池] 模拟卡池&出率
 [切换卡池] 更换模拟卡池
-[氪金@某人] 为某人氪金, 恢复抽卡次数
+[氪金@某人] 恢复抽卡次数(是个人就能用
 '''.strip()
-sv = Service('gacha', help_=sv_help, bundle='pcr娱乐')
+
+sv = Service(
+        name = 'pcr抽卡',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = 'pcr抽卡', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+        
 jewel_limit = DailyNumberLimiter(15000)
 tenjo_limit = DailyNumberLimiter(7)
 
@@ -62,7 +72,7 @@ async def gacha_info(bot, ev: CQEvent):
     await bot.send(ev, f"本期卡池主打的角色：\n{up_chara}\nUP角色合计={(gacha.up_prob/10):.1f}% 3★出率={(gacha.s3_prob)/10:.1f}%\n")
 
 
-POOL_NAME_TIP = '请选择以下卡池\n> 选择卡池 jp\n> 选择卡池 tw\n> 选择卡池 bilibili\n> 选择卡池 fes\n> 选择卡池 七冠\n> 选择卡池 联动\n> 选择卡池 限定（现已全部实装）\n> 选择卡池 mix'
+POOL_NAME_TIP = '请选择以下卡池\n> 选择卡池 jp\n> 选择卡池 tw\n> 选择卡池 bilibili\n> 选择卡池 fes\n> 选择卡池 七冠\n> 选择卡池 特殊\n> 选择卡池 限定（现已全部实装）\n> 选择卡池 mix'
 @sv.on_prefix(('切换卡池', '选择卡池'))
 async def set_pool(bot, ev: CQEvent):
     #if not priv.check_priv(ev, priv.ADMIN):
@@ -82,12 +92,12 @@ async def set_pool(bot, ev: CQEvent):
         name = 'FES'
     elif name in ('七冠', 'セブンクラウンズ'):
         name = 'セブンクラウンズ'    
-    elif name in ('联动', '活动'):
-        await bot.finish(ev,'请选择以下卡池\n> 选择卡池 re0\n> 选择卡池 偶像大师')
-    elif name in ('RE:0联动', 're0联动', 're0'):
-        name = 're0'
-    elif name in ('偶像大师联动', '偶像大师活动', '偶像大师'):
-        name = '偶像大师'
+    elif name in ('特殊'):
+        await bot.finish(ev,'请选择以下卡池\n> 选择卡池 baotiao\n> 选择卡池 feiqiu')
+    elif name in ('baotiao'):
+        name = 'baotiao'
+    elif name in ('feiqiu'):
+        name = 'feiqiu'
     elif name in ('限定'):
         await bot.finish(ev,'请选择以下卡池\n> 选择卡池 泳装限定\n> 选择卡池 万圣限定\n> 选择卡池 圣诞限定\n> 选择卡池 春节限定\n> 选择卡池 情人节限定')
     elif name in ('泳装限定'):
@@ -265,10 +275,11 @@ async def gacha_300(bot, ev: CQEvent):
             msg.append("补井还是不补井，这是一个问题...")
         else:
             msg.append("期望之内，亚洲水平")
-    elif up == 3:
-        msg.append("抽井母五一气呵成！多出30等专武～")
-    elif up >= 4:
-        msg.append("记忆碎片一大堆！您是托吧？")
+  #  elif up == 3:
+    #    msg.append("抽井母五一气呵成！多出30等专武～")
+   # elif up >= 4:
+        #msg.append("记忆碎片一大堆！您是托吧？")
+      #  msg.append("记忆碎片一大堆！您是托吧？")
 
     await bot.send(ev, '\n'.join(msg), at_sender=True)
     #silence_time = (100*up + 50*(up+s3) + 10*s2 + s1) * 1

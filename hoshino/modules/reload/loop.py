@@ -1,2 +1,2 @@
 class Counter:
-    count = 64
+    count = 81

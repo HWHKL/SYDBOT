@@ -4,21 +4,36 @@
 import asyncio
 import os
 import random
-
 import aiohttp
-import hoshino
 import requests
 from bs4 import BeautifulSoup
-from hoshino import Service
-from hoshino.modules.priconne import chara
-from hoshino.typing import CQEvent, MessageSegment
 
+import hoshino
+from hoshino import Service, priv, jewel
+from hoshino.modules.priconne import chara
+from hoshino.typing import MessageSegment, CQEvent
 from . import GameMaster
 
-sv = Service('猜语音', visible= True, enable_on_default= True, bundle='猜语音', help_='''
+
+sv_help = '''
 - [cygames] 猜猜随机的"cygames"语音来自哪位角色
 - [猜语音] 猜猜随机的语音来自哪位角色
-'''.strip())
+'''.strip()
+
+sv = Service(
+    name = '猜语音',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #是否可见
+    enable_on_default = True, #是否默认启用
+    bundle = '娱乐', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助猜语音"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+    
 
 DOWNLOAD_THRESHOLD = 76
 MULTIPLE_VOICE_ESTERTION_ID_LIST = ['0044']
@@ -83,7 +98,7 @@ async def download_voice_ci(bot, ev: CQEvent, logger):
                     else:
                         logger.info(f'下载{file_name}成功!')
                         count = count + 1
-        await bot.send(ev, f'下载完毕，此次下载"cygames"语音包{count}个，目前共{len(os.listdir(DIR_PATH))}个. ')
+        await bot.send(ev, f'下载完毕，此次下载"cygames"语音包{count}个，目前共{len(os.listdir(DIR_PATH))}个. 如果您使用的是go-cqhttp，请用软件将它们批量转换为silk格式，否则无法发送.')
 
 
 @sv.on_fullmatch(("猜语音排行", "猜语音排行榜", "猜语音群排行"))
@@ -160,5 +175,9 @@ async def on_input_chara_name(bot, ev: CQEvent):
         game.winner = ev.user_id
         n = game.record()
         gm.exit_game(ev.group_id)
-        msg = f"正确答案是: {c.name}{c.icon.cqcode}\n{MessageSegment.at(ev.user_id)}猜对了，真厉害！TA已经猜对{n}次了~"
+        jewel_counter = jewel.jewelCounter()
+        winning_jewel = 70
+        jewel_counter._add_jewel(ev.group_id, ev.user_id, winning_jewel)
+        msg_part2 = f'获得了{winning_jewel}宝石'
+        msg = f"正确答案是: {c.name}{c.icon.cqcode}\n{MessageSegment.at(ev.user_id)}猜对了，真厉害！TA已经猜对{n}次了~\n{msg_part2}"
         await bot.send(ev, msg)

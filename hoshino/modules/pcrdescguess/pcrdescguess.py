@@ -1,4 +1,4 @@
-from hoshino import Service
+from hoshino import Service, priv, jewel
 from hoshino.typing import CQEvent
 from hoshino.modules.priconne import chara
 from . import _chara_data
@@ -6,10 +6,25 @@ from . import _chara_data
 import hoshino
 import sqlite3, os, random, asyncio
 
-sv = Service('猜角色', visible= True, enable_on_default= True, bundle='猜角色', help_='''
+sv_help = '''
 - [猜角色] 猜猜机器人随机发送的文本在描述哪位角色
 - [猜角色群排行] 显示猜角色小游戏猜对次数的群排行榜(只显示前十名)
-'''.strip())
+'''.strip()
+
+sv = Service(
+    name = '猜角色',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #是否可见
+    enable_on_default = True, #是否默认启用
+    bundle = '娱乐', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助猜角色"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+
 
 
 PREPARE_TIME = 5
@@ -181,7 +196,11 @@ async def on_input_chara_name(bot, ev: CQEvent):
                 user_card = uid2card(ev.user_id, user_card_dict)
                 msg_part = f'{user_card}猜对了，真厉害！TA已经猜对{winning_count}次了~\n(此轮游戏将在几秒后自动结束，请耐心等待)'
                 name, cqcode = get_cqcode(winner_judger.get_correct_chara_id(ev.group_id))
-                msg =  f'正确答案是: {name}{cqcode}\n{msg_part}'
+                jewel_counter = jewel.jewelCounter()
+                winning_jewel = 50
+                jewel_counter._add_jewel(ev.group_id, ev.user_id, winning_jewel)
+                msg_part2 = f'{user_card}获得了{winning_jewel}宝石'
+                msg =  f'正确答案是: {name}{cqcode}\n{msg_part}\n{msg_part2}'
                 await bot.send(ev, msg)
     except Exception as e:
         await bot.send(ev, '错误:\n' + str(e))

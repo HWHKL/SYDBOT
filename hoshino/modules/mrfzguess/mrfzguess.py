@@ -1,4 +1,4 @@
-from hoshino import Service
+from hoshino import Service, priv
 from hoshino.typing import CQEvent
 from . import _data
 from . import _chara_data
@@ -9,11 +9,25 @@ import math, sqlite3, os, random, asyncio, hoshino
 from nonebot import MessageSegment
 from hoshino.util import pic2b64
 
-sv = Service('mrfzguess', bundle='mrfz娱乐', help_='''
+
+sv_help = '''
 猜明日方舟 | 猜猜机器人随机发送的文本在描述哪位角色
 猜明日方舟排行榜 | 显示猜角色小游戏猜对次数的群排行榜(只显示前十名)
-'''.strip())
+'''.strip()
 
+sv = Service(
+        name = '明日方舟猜角色',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '娱乐', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助明日方舟猜角色"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
 
 PREPARE_TIME = 5
 ONE_TURN_TIME = 8

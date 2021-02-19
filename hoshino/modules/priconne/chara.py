@@ -1,20 +1,21 @@
 import importlib
+from io import BytesIO
+
 import pygtrie
+import requests
 from fuzzywuzzy import fuzz, process
 from PIL import Image
-from io import BytesIO
-import requests
 
+import hoshino
 from hoshino import R, log, sucmd, util
 from hoshino.typing import CommandSession
 
 from . import _pcr_data
 
-logger = log.new_logger('chara')
+logger = log.new_logger('chara', hoshino.config.DEBUG)
 UNKNOWN = 1000
 UnavailableChara = {
     1067,   # 穗希
-    #1068,   # 晶
     1069,   # 霸瞳
     1072,   # 可萝爹
     1073,   # 拉基拉基
@@ -57,13 +58,13 @@ class Roster:
 
     def guess_id(self, name):
         """@return: id, name, score"""
-        name, score = process.extractOne(name, self._all_name_list)
+        name, score = process.extractOne(name, self._all_name_list, processor=util.normalize_str)
         return self._roster[name], name, score
 
 
     def parse_team(self, namestr):
         """@return: List[ids], unknown_namestr"""
-        namestr = util.normalize_str(namestr)
+        namestr = util.normalize_str(namestr.strip())
         team = []
         unknown = []
         while namestr:
@@ -97,7 +98,7 @@ def is_npc(id_):
     if id_ in UnavailableChara:
         return True
     else:
-        return not ((1000 < id_ < 1200) or (1800 < id_ < 1900) or id_==1701 or id_==1702)
+        return not ((1000 < id_ < 1200) or (1700 < id_ < 1900))
 
 def gen_team_pic(team, size=64, star_slot_verbose=True):
     num = len(team)
@@ -113,19 +114,16 @@ def download_chara_icon(id_, star):
     save_path = R.img(f'priconne/unit/icon_unit_{id_}{star}1.png').path
     logger.info(f'Downloading chara icon from {url}')
     try:
-        rsp = requests.get(url, stream=True, timeout=10)
+        rsp = requests.get(url, stream=True, timeout=5)
     except Exception as e:
         logger.error(f'Failed to download {url}. {type(e)}')
-        #logger.exception(e)
-        return False
+        logger.exception(e)
     if 200 == rsp.status_code:
         img = Image.open(BytesIO(rsp.content))
         img.save(save_path)
         logger.info(f'Saved to {save_path}')
-        return True
     else:
         logger.error(f'Failed to download {url}. HTTP {rsp.status_code}')
-        return False
 
 
 class Chara:
@@ -199,7 +197,7 @@ class Chara:
 
 
 
-@sucmd('reload-pcr-chara', force_private=False, aliases=('重载角色花名册','重置角色花名册','更新角色花名册','刷新角色花名册'))
+@sucmd('reload-pcr-chara', force_private=False, aliases=('重载花名册', ))
 async def reload_pcr_chara(session: CommandSession):
     try:
         roster.update()
@@ -208,32 +206,16 @@ async def reload_pcr_chara(session: CommandSession):
         logger.exception(e)
         await session.send(f'Error: {type(e)}')
 
-@sucmd('reload-chara-icon', force_private=False, aliases=('下载头像','更新头像'))
-async def reload_chara_icon(session: CommandSession):
-    name = session.current_arg
-    idx = name2id(name)
-    if idx==UNKNOWN:
-        await session.send(f'未找到角色“{name}”')
-        return
-    c = fromid(idx)
-    await session.send(f'正在下载{c.name}的头像，请稍等')
-    six = download_chara_icon(idx, 6)
-    three = download_chara_icon(idx, 3)
-    one = download_chara_icon(idx, 1)
-    if any((one,three,six)):
-        person = Chara(idx, star=6 if six else 3)
-        msg = f'已更新{c.name}的'
-        if one:
-            msg += '一星'
-        if three:
-            if one:
-                msg += '、'
-            msg += '三星'
-        if six:
-            if three or (one and not three):
-                msg += '、'
-            msg += '六星'
-        msg += '头像'
-        await session.send(f'{msg}\n{person.icon.cqcode}')
-    else:
-        await session.send('更新失败，可能是该角色未实装')
+
+@sucmd('download-pcr-chara-icon', force_private=False, aliases=('下载角色头像'))
+async def download_pcr_chara_icon(session: CommandSession):
+    try:
+        id_ = roster.get_id(session.current_arg_text.strip())
+        assert id_ != UNKNOWN, '未知角色名'
+        download_chara_icon(id_, 6)
+        download_chara_icon(id_, 3)
+        download_chara_icon(id_, 1)
+        await session.send('ok')
+    except Exception as e:
+        logger.exception(e)
+        await session.send(f'Error: {type(e)}')

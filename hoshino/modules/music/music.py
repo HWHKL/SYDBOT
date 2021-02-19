@@ -3,29 +3,41 @@ import typing
 
 from aiocqhttp.message import MessageSegment
 
-from hoshino import Service
+from hoshino import Service, priv
 
 from .search_netease_cloud_music import search as search163
 from .search_qq_music import search as searchqq
 
-sv = Service(
-    'music',
-    enable_on_default=True,
-    visible=True,
-    help_="[点歌 好日子] 混合搜索\n"
-          "[搜网易 好日子] 搜索网易云\n"
-          "[搜QQ 好日子] 搜索QQ音乐",
-    bundle='pcr娱乐'
-)
 
-cool_down = datetime.timedelta(minutes=1)  # 冷却时间
+sv_help = '''
+[点歌 好日子] 混合搜索
+[搜网易 好日子] 搜索网易云
+[搜QQ 好日子] 搜索QQ音乐
+'''.strip()
+
+sv = Service(
+        name = '点歌',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '娱乐', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助点歌"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
+    
+    
+cool_down = datetime.timedelta(minutes=3)  # 冷却时间
 expire = datetime.timedelta(minutes=2)
 
 temp = {}
 last_check = {}
 
 
-@sv.on_prefix(['选', '选择', '选歌'])
+@sv.on_prefix(['选择','选歌'])
 async def choose_song(bot, ev):
     key = f'{ev.group_id}-{ev.user_id}'
     if key not in temp:
@@ -62,7 +74,7 @@ async def choose_song(bot, ev):
         #     await bot.send(ev, '只能选择列表中有的歌曲哦', at_sender=True)
 
 
-@sv.on_prefix(('点歌', '搜歌曲', '我想听'))
+@sv.on_prefix(('点歌', '搜歌曲'))
 async def to_apply_for_title(bot, ev):
     if str(ev.user_id) in last_check:
         intervals = datetime.datetime.now() - last_check[str(ev.user_id)]

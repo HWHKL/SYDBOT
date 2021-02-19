@@ -5,21 +5,31 @@ import random
 import os
 import hoshino
 from hoshino.util import DailyNumberLimiter
-from hoshino import R, Service
+from hoshino import R, Service, priv
 from hoshino.util import pic2b64
 from hoshino.typing import *
 from .luck_desc import luck_desc
 from .luck_type import luck_type
 from PIL import Image, ImageSequence, ImageDraw, ImageFont
 
-
-
-#帮助文本
-sv = Service('抽签', visible= True, enable_on_default= True, bundle='抽签', help_='''
-[抽签|人品|运势|抽凯露签]
-随机角色/指定凯露预测今日运势
+sv_help='''
+[抽签|人品|运势|抽xcw签]
+随机角色/指定xcw预测今日运势
 准确率高达114.514%！
-'''.strip())
+'''.strip()
+sv = Service(
+        name = '抽签',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '娱乐', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助抽签"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
 
 lmt = DailyNumberLimiter(1)
 #设置每日抽签的次数，默认为1
@@ -28,7 +38,7 @@ Data_Path = hoshino.config.RES_DIR
 Img_Path = 'portunedata/imgbase'
 
 
-@sv.on_prefix(('抽签', '人品', '运势'), only_to_me=True)
+@sv.on_prefix(('抽签', '人品', '运势'))
 async def portune(bot, ev):
     uid = ev.user_id
     if not lmt.check(uid):
@@ -41,7 +51,7 @@ async def portune(bot, ev):
     await bot.send(ev, pic, at_sender=True)
 
 
-@sv.on_fullmatch(('抽镜华签', '抽小仓唯签', '抽露娜签'))
+@sv.on_fullmatch(('抽镜华签', '抽小仓唯签', '抽xcw签'))
 async def portune_kyaru(bot, ev):
     uid = ev.user_id
     if not lmt.check(uid):

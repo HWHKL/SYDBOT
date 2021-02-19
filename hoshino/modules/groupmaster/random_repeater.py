@@ -1,22 +1,49 @@
 import random
 
 import hoshino
-from hoshino import Service
+from hoshino import Service,priv
 from hoshino.typing import CQEvent, CQHttpError
 
-sv = Service('random-repeater', help_='随机复读机')
+sv_help = '''
+人类的本质是____?
+'''.strip()
 
-PROB_A = 1.4
-group_stat = {}     # group_id: (last_msg, is_repeated, p)
+sv = Service(
+        name = '复读',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '复读', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+        
+       
+
+@sv.on_fullmatch(["复读帮助"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_while, at_sender=False)
+sv_while = '''
+不复读率 随 复读次数 指数级衰减
+从第2条复读，即第3条重复消息开始有几率触发复读
+a是设定的常量
+复读概率计算式：p_n = 1 - 1/a^n
+递推式：p_n+1 = 1 - (1 - p_n) / a
+'''.strip()
 
 '''
 不复读率 随 复读次数 指数级衰减
 从第2条复读，即第3条重复消息开始有几率触发复读
-
 a 设为一个略大于1的小数，最好不要超过2，建议1.6
 复读概率计算式：p_n = 1 - 1/a^n
 递推式：p_n+1 = 1 - (1 - p_n) / a
 '''
+
+PROB_A = 1.4
+group_stat = {}     # group_id: (last_msg, is_repeated, p)
+
+
+
 @sv.on_message()
 async def random_repeater(bot, ev: CQEvent):
     group_id = ev.group_id

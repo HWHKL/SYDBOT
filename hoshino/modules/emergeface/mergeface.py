@@ -1,21 +1,40 @@
 import time
-from hoshino import Service, aiorequests
+from hoshino import Service, aiorequests, priv, R
 from nonebot import MessageSegment
 
 BASE_URL = 'https://api-cn.faceplusplus.com/imagepp/v1/mergeface'
 
 params = {
-    'api_key': '',  # 申请的 API Key 填这里
-    'api_secret': '',  # 申请的 API Secret 填这里
-    'merge_rate': 50,  # 融合比例，范围 [0,100]。数字越大融合结果包含越多融合图特征 默认值为50
+    'api_key': 'bM_r1bmnCSNEdiGtzmRKKFvXPpJ_Tc3W',  # 申请的 API Key 填这里
+    'api_secret': 'hPnd32g9HGIEvCLZb5pfHUcYxADJgzbs',  # 申请的 API Secret 填这里
+    'merge_rate': 60,  # 融合比例，范围 [0,100]。数字越大融合结果包含越多融合图特征 默认值为50
     'feature_rate': 80  # 五官融合比例，范围 [0,100]。主要调节融合结果图中人像五官相对位置，数字越小融合图中人像五官相对更集中 。 默认值为45
 }
 
 tm_url = ['template_url', 'merge_url']
 
-sv = Service('换脸', visible= False, enable_on_default= False, bundle='换脸', help_='''
-无说明
-'''.strip())
+
+sv_help = '''
+群聊发送 换脸
+然后发2张图就可
+'''.strip()
+
+sv = Service(
+        name = '换脸',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = False, #是否默认启用
+        bundle = '娱乐', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助换脸"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
+
+
+
 
 wait_list = {}
 

@@ -9,19 +9,49 @@ import random
 from nonebot import *
 from . import util
 
-from hoshino import Service  # 如果使用hoshino的分群管理取消注释这行
+from hoshino import Service, priv  # 如果使用hoshino的分群管理取消注释这行
 
 #
-sv = Service('调教', visible= True, enable_on_default= True, bundle='调教', help_='''
-- [有人/大家说AA回答BB] 对所有人生效
-- [我说AA回答BB] 仅仅对个人生效
+sv_help = '''
+- [有人/大家说/问AA你答BB] 对所有人生效
+- [我问AA你答BB] 仅对个人生效
 - [不要回答AA] 删除某问题下的回答(优先度:自己设置的>最后设置的)
 - [问答] 查看自己的回答,@别人可以看别人的
 - [全部问答] 查看本群设置的回答
 - 只有管理可以删别人设置的哦~~~
-'''.strip())
-# 如果使用hoshino的分群管理取消注释这行
+※进阶用法：
+发送[epa进阶用法]可查看
+'''.strip()
+sv_help1 = '''
+- [有人/大家说AA回答=BB] 
+- [我说AA回答=BB] 
+对于bot而言你说AA就是在说BB
+示例：
+我说1回答=xcwkkp 
+或者
+我说1回答=echo CQ码
+CQ码部分
+- [CQ码帮助]
+'''.strip()
 
+sv = Service(
+    name = '调教',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #False隐藏
+    enable_on_default = True, #是否默认启用
+    bundle = '通用', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助调教"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+    
+@sv.on_fullmatch(["epa进阶用法"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help1)
+    
 config = util.get_config()
 db = util.init_db(config['cache_dir'])
 

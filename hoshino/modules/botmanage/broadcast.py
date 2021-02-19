@@ -23,7 +23,8 @@ async def broadcast(session: CommandSession):
                 except Exception as e:
                     hoshino.logger.critical(f'向广播发起者进行错误回报时发生错误：{type(e)}')
     await session.send(f'广播完成！')
-
+    
+#私发机器人分群广播 [群号] [内容]
 @sucmd('broadcastbygroup', aliases=('gbc', '分群广播'))
 async def broadcast(session: CommandSession):
     msg = session.current_arg.split(' ')

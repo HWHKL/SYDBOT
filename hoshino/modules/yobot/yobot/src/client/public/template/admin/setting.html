@@ -24,7 +24,9 @@
       </el-form-item>
       <el-form-item>
         <el-button type="info" @click="setting.public_address = window.location.origin+'/'">填入当前地址</el-button>
+        <!--
         <el-button type="info" @click="domainApply = true">获取 yobot 域名</el-button>
+        -->
       </el-form-item>
       <el-dialog title="申请yobot域名" :visible.sync="domainApply">
         <el-form>
@@ -46,6 +48,12 @@
       </el-dialog>
       <el-form-item label="此站点的URL前缀">
         <el-input v-model="setting.public_basepath" placeholder="/yobot/"></el-input>
+      </el-form-item>
+      <el-form-item label="此站点的gzip压缩">
+        开启 gzip 压缩能很大程度节省流量<br/>
+        1级压缩大约节省 70%，9级压缩大约节省 80%<br/>
+        如果你使用了 nginx 之类的反向代理，那么应该由 nginx 负责 gzip 压缩<br/>
+        <el-input-number v-model="setting.web_gzip" :min="0" :max="9" placeholder="5"></el-input-number>
       </el-form-item>
       <el-form-item label="主页展示备案号">
         <el-checkbox v-model="setting.show_icp"></el-checkbox>

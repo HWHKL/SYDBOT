@@ -1,6 +1,6 @@
 # 管理员
 admins:
-  - 389897773
+  - 1289641558
 
 # 缓存存放目录 该目录包括存放问答数据库和图片
 cache_dir: ./data/
@@ -14,10 +14,11 @@ comm:
   answer_all:
     - 大家说
     - 有人说
-  answer_me: 我说
+    - 有人问
+  answer_me: 我问
 
   # 问后回答处理  比如 大家说1回答2  这里的回答定义文字
-  answer_handler: 回答
+  answer_handler: 你答
 
   # 怎么删除
   answer_delete: 不要回答
@@ -26,7 +27,7 @@ comm:
   answer_delete_all: 清空回答
 
   # 显示个人设置的问答
-  show_question: 问答
+  show_question: 看看我问
 
   #显示所有的问答
   show_question_list:

@@ -1,7 +1,15 @@
-from hoshino import Service
+from hoshino import Service, priv
 
-sv = Service("消息造假")
 
+sv = Service(
+        name = '消息造假',  #功能名
+        use_priv = priv.SUPERUSER, #使用权限   
+        manage_priv = priv.SUPERUSER, #管理权限
+        visible = False, #是否可见
+        enable_on_default = False, #是否默认启用
+        bundle = '消息造假', #属于哪一类
+        help_ = '你猜' #帮助文本
+        )
 # 多条消息的分隔符
 SPLIT_TEXT = "\n"
 

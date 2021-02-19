@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
 
 <head>
-    <title>功能表</title>
+    <title>临时功能表</title>
+	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" Content="机器人功能指令说明">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/github-markdown-css/3.0.1/github-markdown.min.css">
@@ -28,204 +30,556 @@
 
 <body class="markdown-body">
     <h1>功能列表</h1>
-    <p>此页指令不需要at机器人</p>
-    <p>(权)标记表示功能需要权限 </p>
-    <p>(自动)标记表示无需触发词，机器人主动推送 </p>
-    <p>方括号表示参数可以省略</p>
-    <h2>系统类</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>关键词</th>
-                <th>说明</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>登录</td>
-                <td>登录进入Web模式</td>
-            </tr>
-            <tr>
-                <td>重置密码</td>
-                <td>随机生成一个新密码（不发链接）</td>
-            </tr>
-            <tr>
-                <td>更新</td>
-                <td>(权)更新机器人</td>
-            </tr>
-            <tr>
-                <td>重启</td>
-                <td>(权)重新启动机器人</td>
-            </tr>
-            <tr>
-                <td>退出此群</td>
-                <td>(权:管理员)命令机器人退出当前群聊<sup class="footnote">1</sup></td>
-            </tr>
-            <tr>
-                <td>version</td>
-                <td>查看机器人版本</td>
-            </tr>
-            <tr>
-                <td>帮助</td>
-                <td>查看帮助</td>
-            </tr>
-        </tbody>
-    </table>
-    <p>
-        <sup class="footnote">1</sup>当管理员希望机器人离开群聊时，应该使用此条命令而不是直接踢出群聊，避免增加封号风险
-    </p>
-    <h2>公会战类</h2>
-    <p>注：本类功能仅限群聊</p>
+<h3>指令说明：</h3>
+    <p><b>(at)</b>标记代表该命令需要at机器人</p>
+<p><strong>@bot等同于直接呼叫昵称，如xcw/小仓唯&nbsp;</strong></p>
+<p><b>(管理员/维护组)</b>标记表示功能需要管理员或维护组权限 </p>
+    <p><b>(自动)</b>标记启用后无需手动触发，会自动推送或执行 </p>
+    <p>方括号[]表示参数可以省略</p>
+<p>命令中间的"+"无需输入，一般为空格</p>
+    <p>&nbsp;请注意，如果一个指令无反应请尝试@bot</p>
+<p><b>如无特殊说明，所有功能仅群聊可用。</b></p>
+    <h2>系统控制</h2>
+	<table>
+		<thead>
+			<tr class="tr">
+				<th>功能</td>
+				<th>指令</td>
+				<th>说明</td>
+			</tr>
+		</thead>
+		<tbody>
+	<tr class="tr">
+		<td class="td" rowspan="2">功能控制</td>
+<td class="td">开+空格+功能名</td>
+		<td class="td">开启指定功能（模糊识别启用/开启/打开/开）</td>
+	</tr>
+	<tr class="tr">
+		<td class="td">关+空格+功能名</td>
+		<td class="td">关闭指定功能（模糊识别禁用/关闭/关）</td>
+	</tr>
+		</tbody>
+		</table>
+    <h2>会战相关</h2>
     <p>公会战功能使用方法请查看<a href="../manual/">手册</a></p>
     <table>
-        <thead>
-            <tr>
-                <th>关键词</th>
-                <th>说明</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>手册</td>
-                <td>查看公会战使用手册</td>
-            </tr>
-            <tr>
-                <td>面板</td>
-                <td>进入公会战面板</td>
-            </tr>
-            <tr>
-                <td>创建日服公会</td>
-                <td>日/韩/台/国，创建后可在后台修改</td>
-            </tr>
-            <tr>
-                <td>加入公会 [@某人]</td>
-                <td>加入到公会名单，如果有at则为加入他人</td>
-            </tr>
-            <tr>
-                <td>加入全部成员</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>报刀2000000 [@某人] [昨日] [：留言]</td>
-                <td>
-                    对boss造成伤害但未击败时用，记录伤害，可以使用 200w/200万/2000k 等（一般公会精确到万即可）<br>
-                    如果有at则为代报，有冒号则为留言<br>
-                    如果有“昨日”则将记录添加到前一天<sup class="footnote">1</sup>
-                </td>
-            </tr>
-            <tr>
-                <td>尾刀 [@某人] [昨日] [：留言]</td>
-                <td>
-                    对boss造成伤害并击败时用，记录伤害<br>
-                    如果有at则为代报，有冒号则为留言<br>
-                    如果有“昨日”则将记录添加到前一天<sup class="footnote">1</sup>
-                </td>
-            </tr>
-            <tr>
-                <td>SL [@某人] [？]</td>
-                <td>挑战boss强制取消后用，记录本日SL<sup class="footnote">2</sup>，用“？”查询今日是否已 SL，如果有at则为代报/代查</td>
-            </tr>
-            <tr>
-                <td>撤销</td>
-                <td>撤销上一次报刀（非管理员只能撤销自己的记录）</td>
-            </tr>
-            <tr>
-                <td>状态</td>
-                <td>显示boss状态</td>
-            </tr>
-            <tr>
-                <td>预约1 [：留言]</td>
-                <td>预约boss，当boss出现时通知，有冒号则为留言</td>
-            </tr>
-            <tr>
-                <td>挂树 [：留言]</td>
-                <td>挂树，当boss被击败时通知</td>
-            </tr>
-            <tr>
-                <td>查1 / 查树</td>
-                <td>查询预约boss的成员，查询挂树的成员</td>
-            </tr>
-            <tr>
-                <td>取消预约1 / 取消1</td>
-                <td>取消预约</td>
-            </tr>
-            <tr>
-                <td>申请出刀</td>
-                <td>锁定boss，提醒后面申请出刀的人有人正在挑战boss</td>
-            </tr>
-            <tr>
-                <td>锁定:留言</td>
-                <td>锁定boss，提醒后面申请出刀的人，冒号后为留言</td>
-            </tr>
-            <tr>
-                <td>解锁</td>
-                <td>解锁boss，其他人可以继续申请<sup class="footnote">3</sup></td>
-            </tr>
-        </tbody>
+    	<thead>
+    		<tr class="tr">
+    			<th>功能</td>
+    			<th>指令</td>
+    			<th>说明</td>
+    		</tr>
+    	</thead>
+    	<tbody>
+    		<tr class="tr">
+    			<td class="td" rowspan="21">公会战管理</td>
+    			<td class="td">登录</td>
+    			<td class="td">(私聊)获取一个临时登录链接，登录后需及时修改密码</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">重置密码</td>
+    			<td class="td">(私聊)随机生成一个临时密码</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">手册</td>
+    			<td class="td">查看公会战功能使用手册</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">查刀</td>
+    			<td class="td">进入公会战查刀页面(该页面可设置为无需登录即可查看)</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">创建国服公会</td>
+    			<td class="td">国/台/日，创建后可在后台修改</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">加入公会[@某人]</td>
+    			<td class="td">加入到公会名单，如果有at则为加入他人</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">报刀+伤害数字[@某人][昨日]</td>
+    			<td class="td">
+    				对boss造成伤害但未击败时使用，可以使用万、W、K等单位<br>例：报刀123456<br>
+    				at他人可以为他人代报，例：报刀123456@他人<br>
+					如果有“昨日”则将记录添加到前一天<sup class="footnote">1</sup>
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">尾刀[@某人][昨日]</td>
+    			<td class="td">
+    				对boss造成伤害并击败时用，记录伤害，不需要加伤害数字<br>
+    				尾刀之后的补偿刀按照普通的报刀方式上报<br>
+    				at他人可以为他人代报，例：尾刀@他人<br>
+					如果有“昨日”则将记录添加到前一天<sup class="footnote">1</sup>
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">SL[？][@某人]</td>
+    			<td class="td">挑战boss强制取消后使用，记录本日SL<sup class="footnote">2</sup>。带“？”查询今日是否已 SL，可以使用@为他人代报SL，也可结合查询他人的SL使用情况。</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">撤销</td>
+    			<td class="td">撤销上一次报刀（非管理员只能撤销自己的记录）</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">状态</td>
+    			<td class="td">显示boss当前状态</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">挂树[:留言]</td>
+    			<td class="td">挂树，当boss被击败时通知。可以在后面加冒号来留言。</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">取消挂树</td>
+    			<td class="td">解除挂树状态</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">查树</td>
+    			<td class="td">查询挂树的成员</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">预约+编号</td>
+    			<td class="td">预约boss，当boss出现时通知，boss编号为1~5<br>
+    				例：预约1
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">取消+编号</td>
+    			<td class="td">取消预约boss，boss编号为1~5<br>
+    				例：取消1</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">查+编号</td>
+    			<td class="td">查询预约boss的成员，boss编号为1~5</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">申请出刀</td>
+    			<td class="td">锁定boss，提醒后面申请出刀的人有人正在挑战boss</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">锁定:留言</td>
+    			<td class="td">锁定boss，提醒后面申请出刀的人，冒号后为留言</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">解锁</td>
+    			<td class="td">解锁boss，其他人可以继续申请</td>
+    		</tr>
+		   	<tr class="tr">
+    			<td class="td">合刀 2000000 150000 300000</td>
+    			<td class="td">合刀+一刀+另一刀伤害+boss血量，可求剩余刀时长（仅可计算两刀的尾刀）</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td" rowspan="4"><p>公会战筛刀</p>
+   			    <p>（刷屏警告 ）</p></td>
+    			<td class="td">筛刀+伤害值[@某人]</td>
+    			<td class="td">
+    				<br>上报需要进行筛刀的伤害，at他人可以为他人代报
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">筛刀记录</td>
+    			<td class="td">显示现在记录的全部筛刀
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">结算+编号</td>
+    			<td class="td">提醒筛刀记录中的某位成员结算出刀，编号为筛刀记录中的编号
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">清空筛刀</td>
+    			<td class="td">清空筛刀数据
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td" rowspan="4">公会排名查询</td>
+    			<td class="td">查询公会XXX</td>
+    			<td class="td">查询公会名包含XXX的公会
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">查询会长XXX</td>
+    			<td class="td">查询会长名字包含XXX的公会
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">查询排名114</td>
+    			<td class="td">查询排名为114的公会的信息
+    			</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">分数线</td>
+    			<td class="td">查询各档位分数线
+    			</td>
+    		</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">公会排名推送</td>
+				<td class="td">绑定公会+会长UID</td>
+				<td class="td">绑定公会, 公会战期间每日5:30会自动推送前一日排名</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">公会排名</td>
+				<td class="td">查询本公会的排名</td>
+			</tr>
+    		<tr class="tr">
+    			<td class="td" rowspan="3">公会战报告书</td>
+    			<td class="td">生成会战报告</td>
+    			<td class="td">生成会战报告书</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">生成离职报告</td>
+    			<td class="td">生成离职报告书</td>
+    		</tr>
+    		<tr class="tr">
+    			<td class="td">+@他人</td>
+    			<td class="td">查看他人的会战报告书（限管理）</td>
+    		</tr>
+    		
+    	</tbody>
     </table>
     <p>
-        <sup class="footnote">1</sup>此功能是在日期变更后，将出刀记录添加到前一天。例如日服中03:59完成出刀，在04:01时向机器人报刀则需要加上[昨日]<br>
+        <sup class="footnote">1</sup>此功能是在日期变更后，将出刀记录添加到前一天。例如国服04:59完成出刀，在05:01后向机器人报刀则需要加上[昨日]<br>
         <sup class="footnote">2</sup>在公会战面板的“查刀”页中，可以查看所有人今日是否已使用SL<br>
         <sup class="footnote">3</sup>此功能既可以用于主动结束锁定，也可以用户强制取消他人的解锁。本人或管理员可以随意解锁，3分钟后“出刀”可以被任何人解锁，“锁定”没有时间限制
     </p>
-    <h2>查询类</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>关键词</th>
-                <th>说明</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>jjc查询 +5个角色名空格分隔</td>
-                <td>查找jjc解法，指定区服可改用“jjc国服/jjc台服/jjc日服”</td>
-            </tr>
-            <tr>
-                <td>(自动：新闻推送)</td>
-                <td>推送最新的新闻</td>
-            </tr>
-            <tr>
-                <td>日程(今日/明日/x月x日)(可自动)</td>
-                <td>查看活动日程</td>
-            </tr>
-            <tr>
-                <td>日程表</td>
-                <td>查看一周日程</td>
-            </tr>
-            <tr>
-                <td>挖矿计算 +当前名次</td>
-                <td>计算剩余可获得的奖励钻石</td>
-            </tr>
-        </tbody>
-    </table>
-    <h2>娱乐类</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>关键词</th>
-                <th>说明</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>十连</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>仓库[@某人[@某人[…]]]</td>
-                <td>查看抽到过的所有角色查看他人抽到过的角色</td>
-            </tr>
-            <tr>
-                <td>在线十连</td>
-                <td>在线抽卡，不扰民</td>
-            </tr>
-            <tr>
-                <td>人偶</td>
-                <td>(权:主人)人偶功能</td>
-            </tr>
-        </tbody>
-    </table>
+    <h2>资料查询</h2>
+	<table>
+		<thead>
+			<tr class="tr">
+				<td class="td">功能</td>
+				<td class="td">指令</td>
+				<td class="td">说明</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="tr">
+				<td class="td" rowspan="4">公主连结WIKI</td>
+				<td class="td">@Bot 简介+角色名</td>
+				<td class="td">查看角色设定信息</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">@Bot 技能+角色名</td>
+				<td class="td">查看角色技能</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">@Bot 专武+角色名</td>
+				<td class="td">查看角色专武</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">@Bot 羁绊+角色名</td>
+				<td class="td">查看角色羁绊加成属性</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="1">竞技场相关</td>
+				<td class="td">挖矿+数字排名</td>
+				<td class="td">查询竞技场剩余钻石<br>
+					例：挖矿 123</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="1">日程查询</td>
+				<td class="td">（国服/日服/台服）日历</td>
+				<td class="td">&nbsp;查看日程表</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="4">PCR查询</td>
+			<tr class="tr">
+				<td class="td">黄骑充电表</td>
+				<td class="td">查看黄骑充电规则表
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">站位图</td>
+				<td class="td">查看角色站位图
+				</td>
+			</tr>
+				<tr class="tr">
+				<td class="td">半月刊</td>
+				<td class="td">查看半月刊
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="3">生日查询</td>
+				<td class="td">谁的生日是+日期</td>
+				<td class="td">这天哪位老婆过生日呢</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">谁的生日是今天</td>
+				<td class="td">看看今天哪位老婆过生日</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">角色名+的生日是哪天</td>
+				<td class="td">看看'老婆'的生日是哪天</td>
+			</tr>
+			
+	  </tbody>
+	</table>
+	<h2>实用工具</h2>
+	<table>
+		<thead>
+			<tr class="tr">
+				<td class="td">功能</td>
+				<td class="td">指令</td>
+				<td class="td">说明</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="tr">
+				<td class="td">能不能好好说话</td>
+				<td class="td">？+拼音缩写
+				</td>
+				<td class="td">在？不会打字？为什么用缩写？</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="3">调教&nbsp;</td>
+				<td class="td">有人说+问题+你答+回答</td>
+				<td class="td">设置自定义问答(对所有人有效)</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">我说+问题+你答+回答</td>
+				<td class="td">设置自定义问答(仅对自己有效)</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">不要回答+问题</td>
+				<td class="td">删除这个问题的问答</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">图片识图</td>
+				<td class="td">图+图片</td>
+				<td class="td">根据图片查询原图出处信息</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">截图识番</td>
+				<td class="td">番+番剧截图</td>
+				<td class="td">可根据截图查询出番剧的名称，精准定位到第几话几分几秒<br>支持先发送“番剧搜索”或“搜索番剧”，后发送图片搜索番剧<br>*必须为原作番剧宽屏截图，不能是局部截图、同人图、表情包等</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">入群欢迎</td>
+				<td class="td">（自动）默认关闭，需手动开启</td>
+				<td class="td">欢迎新大佬</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">退群通知</td>
+				<td class="td">（自动）默认关闭，需手动开启</td>
+				<td class="td">有人退群了，你有什么头猪么？</td>
+			</tr>
+		</tbody>
+	</table>
+	<h3>订阅推送</h3>
+	<p>订阅类功能为避免打扰，全部为默认关闭状态，如需开启请使用：<strong>@Bot 开 功能名</strong></p>
+	<table>
+		<thead>
+			<tr class="tr">
+				<td class="td">功能</td>
+				<td class="td">指令</td>
+				<td class="td">说明</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="tr">
+				<td class="td">竞技场结算提醒</td>
+				<td class="td">(默认关闭)每日下午2点40分提醒竞技场结算前背刺<br>开启指令(不要带@)：开 竞技场结算提醒-国/日</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">生日提醒</td>
+				<td class="td">（自动）开 生日提醒/关 生日提醒
+				</td>
+				<td class="td">每天00：01提醒今天过生日的角色</td>
+			</tr>
+		</tbody>
+	</table>
+	<h3>娱乐游戏</h3>
+	<table>
+		<thead>
+			<tr class="tr">
+				<td class="td">功能</td>
+				<td class="td">指令</td>
+				<td class="td">说明</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="tr">
+				<td class="td" rowspan="5">模拟pcr扭蛋</td>
+				<td class="td">@bot+单抽</td>
+				<td class="td">模拟一次单抽扭蛋</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">@bot+十连</td>
+				<td class="td">模拟一次十连扭蛋</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">@bot+来一井</td>
+				<td class="td">模拟一次三百连扭蛋</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">切换卡池</td>
+				<td class="td">切换卡池所在服务器，默认为日服卡池<br>
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">氪金+@需要氪金的成员(不要@bot)</td>
+				<td class="td">可一次@多个成员，重置每日的抽卡次数(限群管理)<br>
+				  例：氪金@一 @二 @三
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">切噜噜</td>
+				<td class="td">切噜一下+文字内容</td>
+				<td class="td">将文字加密为切噜语<br>
+					例：切噜一下 这里是测试内容
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">切噜～♪+切噜语</td>
+				<td class="td">解密切噜语<br>
+					例：切噜～♪ 切叮咧咧咧咧咧咧咧</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">网抑云语录</td>
+				<td class="td">上号/生而为人/已黑化</td>
+				<td class="td">获得一条网抑云语录</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">骰娘Roll</td>
+				<td class="td">.r (骰子个数)d(骰子面数)</td>
+				<td class="td">例：.r 1d20<br>骰一次20面骰子</td>
+			</tr>
+			
+			<tr class="tr">
+				<td class="td">营销文生成</td>
+				<td class="td">营销号 主体/事件/另一种说法</td>
+				<td class="td">生成营销样板文</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">狗屁不通生成</td>
+				<td class="td">狗屁不通+关键词</td>
+				<td class="td">这有什么意义吗？</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">禁言套餐</td>
+				<td class="td">精致睡眠</td>
+				<td class="td">禁言8小时</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">来一+份/个+（任意关键词，需包含：睡、茶）+套餐</td>
+				<td class="td">禁言随机时长<br>例：来一份XX陪睡套餐 或 来一个下午茶口球套餐</td>
+			</tr>
+	  < <tr class="tr">
+				<td class="td" rowspan="2">点歌</td>
+				<td class="td">点歌+空格+歌名</td>
+				<td class="td">搜索歌曲</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">选择+歌曲序号</td>
+				<td class="td">开始听歌</td>
+			</tr> 
+			<tr class="tr">
+				<td class="td">抽签</td>
+				<td class="td">抽签@bot</td>
+				<td class="td">公主连结运势！看看你今天的幸运公主是哪一位</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">群管理</td>
+				<td class="td">谁是龙王</td>
+				<td class="td">查看本群龙王</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">龙王榜</td>
+				<td class="td">查看本群水最多的人
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="6">戳一戳</td>
+				<td class="td">戳一戳(双击机器人头像)</td>
+				<td class="td">戳一戳机器人, 她会送你公主连结卡片哦~</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">查看仓库（@某人）</td>
+				<td class="td">查看某人的卡片仓库，默认查看自己
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">合成 [卡片1名称] [卡片2名称]</td>
+				<td class="td">将两张卡片融合以获得一张新的卡片
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">赠送 [@某人] [赠送的卡片名]</td>
+				<td class="td">将自己的卡片赠送给他人
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">交换 [卡片1名称] [@某人] [卡片2名称]</td>
+				<td class="td">向某人发起卡片交换请求，用自己的卡片1交换他的卡片2
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">确认交换</td>
+				<td class="td">收到换卡请求后一定时间内输入这个指令可完成换卡
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">猜头像</td>
+				<td class="td">猜头像</td>
+				<td class="td">猜猜这个图片截取自哪位公主连结角色的头像</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">猜头像排行榜</td>
+				<td class="td">显示猜头像小游戏猜对次数的群排行榜
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">猜角色</td>
+				<td class="td">猜角色</td>
+				<td class="td">猜猜机器人随机发送的文本在描述哪位角色</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">猜角色排行榜</td>
+				<td class="td">显示猜角色小游戏猜对次数的群排行榜
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">猜语音</td>
+				<td class="td">cygames</td>
+				<td class="td">猜猜随机的"cygames"语音来自哪位角色</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">猜语音排行榜</td>
+				<td class="td">显示猜语音小游戏猜对次数的群排行榜
+				</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">俄罗斯轮盘</td>
+				<td class="td">开枪/rs</td>
+				<td class="td">开始俄罗斯轮盘小游戏（失败禁言60秒</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">俄罗斯轮盘赌</td>
+				<td class="td">开始双人对决（失败禁言60秒</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">搓群友</td>
+				<td class="td">搓 @某人</td>
+				<td class="td">群友搓一搓，生活欢乐多</td>
+			</tr>
+			<tr class="tr">
+				<td class="td" rowspan="2">接头霸王</td>
+				<td class="td">接头霸王A+图片</td>
+				<td class="td">三次元图片接臭鼬头</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">接头霸王B+图片</td>
+				<td class="td">二次元图片接臭鼬头</td>
+			</tr>
+			<tr class="tr">
+				<td class="td">人脸合成</td>
+				<td class="td">换脸</td>
+				<td class="td">发送后再发两张需要换脸的图片</td>
+			</tr>
+		
+		</tbody>
+	</table>
+	
+    
 </body>
 
 </html>

@@ -8,14 +8,29 @@ try:
 except:
     import json
 
-from hoshino import aiorequests, R, Service
+from hoshino import aiorequests, R, Service, priv
 from hoshino.typing import *
 
 sv_help = '''
 官方四格漫画更新(日文)
-[官漫132] 阅览指定话
+- [官漫132] 阅览指定话
 '''.strip()
-sv = Service('pcr-comic', help_=sv_help, bundle='pcr订阅')
+
+sv = Service(
+    name = '官方漫画',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #是否可见
+    enable_on_default = True, #是否默认启用
+    bundle = '订阅', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助官方漫画"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+    
+
 
 def load_index():
     with open(R.get('img/priconne/comic/index.json').path, encoding='utf8') as f:
@@ -96,7 +111,7 @@ async def download_comic(id_):
         json.dump(index, f, ensure_ascii=False)
 
 
-@sv.scheduled_job('cron', minute='*/5', second='25')
+@sv.scheduled_job('cron', day='*/5')
 async def update_seeker():
     '''
     轮询官方四格漫画更新

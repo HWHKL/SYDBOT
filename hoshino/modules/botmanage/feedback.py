@@ -3,7 +3,23 @@ from hoshino import Service, priv
 from hoshino.typing import CQEvent
 from hoshino.util import DailyNumberLimiter
 
-sv = Service('_feedback_', manage_priv=priv.SUPERUSER, help_='[反馈] 后接反馈内容 联系维护组')
+sv_help = '''
+[反馈] 后接反馈内容 联系维护组
+'''.strip()
+
+sv = Service(
+    name = '反馈',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #是否可见
+    enable_on_default = True, #是否默认启用
+    bundle = '反馈', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助反馈"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
 
 _max = 3
 lmt = DailyNumberLimiter(_max)

@@ -3,11 +3,11 @@ from functools import cmp_to_key
 from nonebot import CommandSession, CQHttpError, on_command
 from nonebot import permission as perm
 from nonebot.argparse import ArgumentParser
-
+from nonebot import get_bot
 from hoshino import Service, priv
 
 PRIV_TIP = f'群主={priv.OWNER} 群管={priv.ADMIN} 群员={priv.NORMAL} bot维护组={priv.SUPERUSER}'
-
+bot = get_bot()
 @on_command('lssv', aliases=('服务列表', '功能列表'), permission=perm.GROUP_ADMIN, only_to_me=False, shell_like=True)
 async def lssv(session:CommandSession):
     parser = ArgumentParser(session=session)
@@ -34,14 +34,23 @@ async def lssv(session:CommandSession):
         if verbose_all or (sv.visible ^ only_hidden):
             x = '○' if on else '×'
             msg.append(f"|{x}| {sv.name}")
-    await session.send('\n'.join(msg))
+    msg='\n'.join(msg)
+    data ={
+            "type": "node",
+            "data": {
+                "name": '无情的工具人',
+                "uin": '2165422112',
+                "content": msg
+            }
+            }
+    await bot.send_group_forward_msg(group_id=session.ctx.get('group_id'), messages=data)
 
 
-@on_command('enable', aliases=('启用', '开启', '打开'), permission=perm.GROUP, only_to_me=False)
+@on_command('enable', aliases=('启用', '开启', '打开', '开'), permission=perm.GROUP, only_to_me=False)
 async def enable_service(session:CommandSession):
     await switch_service(session, turn_on=True)
 
-@on_command('disable', aliases=('禁用', '关闭'), permission=perm.GROUP, only_to_me=False)
+@on_command('disable', aliases=('禁用', '关闭','关'), permission=perm.GROUP, only_to_me=False)
 async def disable_service(session:CommandSession):
     await switch_service(session, turn_on=False)
 

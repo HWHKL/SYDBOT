@@ -1,4 +1,4 @@
-from hoshino import Service
+from hoshino import Service, priv
 from hoshino.typing import CQEvent
 from hoshino.modules.priconne import chara
 import json
@@ -9,12 +9,29 @@ import re
 import os
 import random
 
-bdrm = Service('birthday_reminder', enable_on_default=True, help_='生日提醒', bundle='pcr订阅')
-svbdsrh = Service('birthday_search', bundle='pcr娱乐', help_='''
+bdrm = Service('生日提醒', enable_on_default=False, help_='生日提醒', bundle='生日提醒')
+
+sv_help = '''
 谁的生日是+生日 这天哪位'老婆'过生日呢
 谁的生日是今天 看看今天哪位'老婆'过生日呢
 角色+的生日是那天 看看老婆那天过生日
-'''.strip())
+'''.strip()
+
+svbdsrh = Service(
+        name = '生日查询',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '生日查询', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@svbdsrh.on_fullmatch(["帮助生日查询"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
+
+
 
 def uid2card(uid, user_card_dict):
     return str(uid) if uid not in user_card_dict.keys() else user_card_dict[uid]

@@ -24,6 +24,7 @@ def load_images():
 
 load_images()
 
+
 sv_help = '''
 [表情列表] 查看当前表情列表
 [查看表情 <名字>] 查看指定表情
@@ -32,13 +33,26 @@ sv_help = '''
 [删除表情 <名字>] 删除一张表情（仅限管理员）
 '''.strip()
 
-sv = Service('表情生成器', visible= False, help_=sv_help, bundle='pcr娱乐')
+sv = Service(
+        name = '表情生成器',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = True, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '娱乐', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助表情生成器"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
+    
 
 @sv.on_fullmatch(('表情列表','查看表情列表'))
 async def show_memes(bot,event):
 	msg = "当前表情有："
 	for meme in img_name:
-		msg += "\n" + meme
+		msg += "|" + meme
 	await bot.send(event,msg,at_sender=True)
 
 @sv.on_fullmatch(('更新表情','刷新表情','更新表情列表','刷新表情列表'))
@@ -95,7 +109,7 @@ async def remove_meme(bot,event):
 	del img[idx],img_name[idx]
 
 
-@sv.on_prefix(('生成表情',))
+@sv.on_prefix(('生成表情'))
 async def generate_meme(bot,event):
 	msg = event.message.extract_plain_text().split(" ")
 	sel = msg[0]

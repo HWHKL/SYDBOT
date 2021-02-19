@@ -1,8 +1,25 @@
 import aiohttp
-from hoshino import R, Service, util
+from hoshino import R, Service, util, priv
 
-sv = Service('antiqks', help_='识破骑空士的阴谋')
+sv_help = '''
+骑空士爪巴！
+'''.strip()
 
+sv = Service(
+        name = '识破骑空士的阴谋',  #功能名
+        use_priv = priv.NORMAL, #使用权限   
+        manage_priv = priv.ADMIN, #管理权限
+        visible = False, #是否可见
+        enable_on_default = True, #是否默认启用
+        bundle = '识破骑空士的阴谋', #属于哪一类
+        help_ = sv_help #帮助文本
+        )
+
+@sv.on_fullmatch(["帮助识破骑空士的阴谋"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=False)
+    
+    
 qks_url = ["granbluefantasy.jp"]
 qksimg = R.img('anti.jpg').cqcode
 

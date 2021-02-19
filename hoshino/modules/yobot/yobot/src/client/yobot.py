@@ -1,12 +1,15 @@
 # coding=utf-8
+import gzip
 import json
 import mimetypes
 import os
 import random
+import re
 import shutil
 import socket
 import sys
 from functools import reduce
+from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, List, Tuple
 from urllib.parse import urljoin
 
@@ -14,18 +17,20 @@ import requests
 from aiocqhttp.api import Api
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from opencc import OpenCC
-from quart import Quart, send_file
+from quart import Quart, make_response, request, send_file
 
 if __package__:
-    from .ybplugins import (calender, clan_battle, gacha, homepage,
-                            jjc_consult, login, marionette, push_news, settings,
-                            switcher, templating, updater, web_util, ybdata,
-                            yobot_msg, custom, miner, group_leave)
+    # 插件版 相对导入
+    from .ybplugins import (calender, clan_battle, custom, gacha, group_leave,
+                            homepage, jjc_consult, login, marionette, miner,
+                            push_news, settings, switcher, templating, updater,
+                            web_util, ybdata, yobot_msg)
 else:
-    from ybplugins import (calender, clan_battle, gacha, homepage,
-                           jjc_consult, login, marionette, push_news, settings,
-                           switcher, templating, updater, web_util, ybdata,
-                           yobot_msg, custom, miner, group_leave)
+    # 独立版 绝对导入
+    from ybplugins import (calender, clan_battle, custom, gacha, group_leave,
+                           homepage, jjc_consult, login, marionette, miner,
+                           push_news, settings, switcher, templating, updater,
+                           web_util, ybdata, yobot_msg)
 
 # 本项目构建的框架非常粗糙，不建议各位把时间浪费本项目上
 # 如果想开发自己的机器人，建议直接使用 nonebot 框架
@@ -33,8 +38,8 @@ else:
 
 
 class Yobot:
-    Version = "[v3.6.8]"
-    Version_id = 225
+    Version = "[v3.6.11]"  # semver
+    Version_id = 253
     #  "git rev-list --count HEAD"
 
     def __init__(self, *,
@@ -102,6 +107,31 @@ class Yobot:
         # initialize database
         ybdata.init(os.path.join(dirname, 'yobotdata.db'))
 
+        # enable gzip
+        if self.glo_setting["web_gzip"] > 0:
+            gzipped_types = {'text/html', 'text/javascript', 'text/css', 'application/json'}
+            @quart_app.after_request
+            async def gzip_response(response):
+                accept_encoding = request.headers.get('Accept-Encoding', '')
+                if (response.status_code < 200 or
+                    response.status_code >= 300 or
+                    len(await response.get_data()) < 1024 or
+                    'gzip' not in accept_encoding.lower() or
+                        'Content-Encoding' in response.headers):
+                    return response
+
+                gzip_buffer = BytesIO()
+                gzip_file = gzip.GzipFile(
+                    mode='wb', compresslevel=self.glo_setting["web_gzip"], fileobj=gzip_buffer)
+                gzip_file.write(await response.get_data())
+                gzip_file.close()
+                gzipped_response = gzip_buffer.getvalue()
+                response.set_data(gzipped_response)
+                response.headers['Content-Encoding'] = 'gzip'
+                response.headers['Content-Length'] = len(gzipped_response)
+
+                return response
+
         # initialize web path
         if not self.glo_setting.get("public_address"):
             try:
@@ -160,8 +190,37 @@ class Yobot:
                     "assets/<path:filename>"),
             methods=["GET"])
         async def yobot_static(filename):
-            return await send_file(
-                os.path.join(os.path.dirname(__file__), "public", "static", filename))
+            accept_encoding = request.headers.get('Accept-Encoding', '')
+            origin_file = os.path.join(os.path.dirname(
+                __file__), "public", "static", filename)
+            if ('gzip' not in accept_encoding.lower()
+                    or self.glo_setting['web_gzip'] == 0):
+                return await send_file(origin_file)
+            gzipped_file = os.path.abspath(os.path.join(
+                os.path.dirname(__file__),
+                "public",
+                "static",
+                filename+"."+self.Version[1:-1]+".gz",
+            ))
+            if not os.path.exists(gzipped_file):
+                if not os.path.exists(origin_file):
+                    return "404 not found", 404
+                with open(origin_file, 'rb') as of, open(gzipped_file, 'wb') as gf:
+                    with gzip.GzipFile(
+                        mode='wb',
+                        compresslevel=self.glo_setting["web_gzip"],
+                        fileobj=gf,
+                    ) as gzip_file:
+                        gzip_file.write(of.read())
+
+            response = await make_response(await send_file(gzipped_file))
+            response.mimetype = (
+                mimetypes.guess_type(os.path.basename(origin_file))[0]
+                or "application/octet-stream"
+            )
+            response.headers['Content-Encoding'] = 'gzip'
+            response.headers['Vary'] = 'Accept-Encoding'
+            return response
 
         # add route for output files
         if not os.path.exists(os.path.join(dirname, "output")):

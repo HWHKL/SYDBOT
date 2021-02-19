@@ -13,13 +13,29 @@ from itertools import zip_longest
 
 from nonebot.message import escape
 
-from hoshino import Service
+from hoshino import Service, priv, util
 from hoshino.typing import CQEvent
 
-sv = Service('pcr-cherugo', bundle='pcr娱乐', help_='''
-[切噜一下+文字] 转换为切噜语
-[切噜～♪切啰巴切拉切蹦切蹦] 切噜语翻译
-'''.strip())
+sv_help = '''
+- [切噜一下] 转换为切噜语
+- [切噜～♪切啰巴切拉切蹦切蹦] 切噜语翻译
+'''.strip()
+
+sv = Service(
+    name = '切噜语',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #是否可见
+    enable_on_default = True, #是否默认启用
+    bundle = '通用', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助切噜语"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+    
+
 
 CHERU_SET = '切卟叮咧哔唎啪啰啵嘭噜噼巴拉蹦铃'
 CHERU_DIC = {c: i for i, c in enumerate(CHERU_SET)}
@@ -81,5 +97,5 @@ async def decherulize(bot, ev: CQEvent):
     if len(s) > 1501:
         await bot.send(ev, '切、切噜太长切不动勒切噜噜...', at_sender=True)
         return
-    msg = '的切噜噜是：\n' + escape(cheru2str(s))
+    msg = '的切噜噜是：\n' + util.filt_message(escape(cheru2str(s)))
     await bot.send(ev, msg, at_sender=True)

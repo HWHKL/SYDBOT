@@ -36,6 +36,7 @@ class ClanBattle:
         '创建': 1,
         '加入': 2,
         '状态': 3,
+        '进度': 27,
         '报刀': 4,
         '尾刀': 5,
         '撤销': 6,
@@ -126,7 +127,7 @@ class ClanBattle:
             return 3  # 35~44 周目：四阶段
         return 4  # 45~ 周目：五阶段
 
-    @timed_cached_func(128, 3600, ignore_self=True)
+    @timed_cached_func(65536, 86400, ignore_self=True)
     def _get_nickname_by_qqid(self, qqid) -> Union[str, None]:
         user = User.get_or_create(qqid=qqid)[0]
         if user.nickname is None:
@@ -167,7 +168,7 @@ class ClanBattle:
             group.save()
         return True
 
-    @async_cached_func(16)
+    @async_cached_func(128)
     async def _fetch_member_list_async(self, group_id):
         try:
             group_member_list = await self.api.get_group_member_list(group_id=group_id)
@@ -184,7 +185,9 @@ class ClanBattle:
             user = User.get_or_create(qqid=member['user_id'])[0]
             membership = Clan_member.get_or_create(
                 group_id=group_id, qqid=member['user_id'])[0]
-            user.nickname = member.get('card') or member.get('nickname') or member['user_id']
+            user.nickname = (member.get('card')
+                             or member.get('nickname')
+                             or member['user_id'])
             user.clan_group_id = group_id
             if user.authority_group >= 10:
                 user.authority_group = (
@@ -196,12 +199,22 @@ class ClanBattle:
         # refresh member list
         self.get_member_list(group_id, nocache=True)
 
+    @timed_cached_func(8, 3600, ignore_self=True)
+    async def _get_friends_nickname_dict_async(self):
+        friend_list = await self.api.get_friend_list()
+        friend_dict = {}
+        for f in friend_list:
+            friend_dict[f['user_id']] = f['nickname']
+        return friend_dict
+
     async def _update_user_nickname_async(self, qqid, group_id=None):
         try:
             user = User.get_or_create(qqid=qqid)[0]
             if group_id is None:
-                userinfo = await self.api.get_stranger_info(user_id=qqid)
-                user.nickname = userinfo['nickname']
+                friend_dict = await self._get_friends_nickname_dict_async()
+                user.nickname = friend_dict.get(qqid, 'unknown')
+                # userinfo = await self.api.get_stranger_info(user_id=qqid)
+                # user.nickname = userinfo['nickname']
             else:
                 userinfo = await self.api.get_group_member_info(
                     group_id=group_id, user_id=qqid)
@@ -339,7 +352,7 @@ class ClanBattle:
             action = '正在挑战' if group.boss_lock_type == 1 else '锁定了'
             boss_summary += '\n{}{}boss'.format(
                 escape(self._get_nickname_by_qqid(group.challenging_member_qq_id)
-                or group.challenging_member_qq_id),
+                       or group.challenging_member_qq_id),
                 action,
             )
             if group.boss_lock_type != 1:
@@ -454,11 +467,12 @@ class ClanBattle:
         # 如果当前正在挑战，则取消挑战
         if user.qqid == group.challenging_member_qq_id:
             group.challenging_member_qq_id = None
-        # 如果当前正在挂树，则取消挂树
+        # 如果当前有挂树/预约，则取消挂树/预约
         Clan_subscribe.delete().where(
             Clan_subscribe.gid == group_id,
             Clan_subscribe.qqid == qqid,
-            Clan_subscribe.subscribe_item == 0,
+            (Clan_subscribe.subscribe_item == 0) |
+            (Clan_subscribe.subscribe_item == challenge.boss_num),
         ).execute()
 
         challenge.save()
@@ -794,7 +808,7 @@ class ClanBattle:
             message=message,
         )
 
-    def get_subscribe_list(self, group_id: Groupid, boss_num=None) -> List[Tuple[int, QQid, dict]]:
+    def get_subscribe_list(self, group_id: Groupid, boss_num=None, order_by="sid") -> List[Dict[str, Any]]:
         """
         get the subscribe lists.
 
@@ -811,7 +825,8 @@ class ClanBattle:
         for subscribe in Clan_subscribe.select().where(
             *query
         ).order_by(
-            Clan_subscribe.sid
+            # Clan_subscribe.sid
+            getattr(Clan_subscribe, order_by)
         ):
             subscribe_list.append({
                 'boss': subscribe.subscribe_item,
@@ -859,8 +874,19 @@ class ClanBattle:
             if subscribe.message:
                 msg += subscribe.message
             notice.append(msg)
-            if subscribe.subscribe_item == 0:  # 如果是挂树，则删除
+            # 如果是挂树，则删除
+            if subscribe.subscribe_item == 0:
                 subscribe.delete_instance()
+                continue
+            # 如果预约者选择了“仅提醒一次”，则删除
+            try:
+                notify_user = User.get_by_id(subscribe.qqid)
+            except peewee.DoesNotExist:
+                _logger.warning('预约者用户不存在')
+                continue
+            if notify_user.notify_preference == 1:
+                subscribe.delete_instance()
+                continue
         if notice:
             asyncio.ensure_future(self.api.send_group_msg(
                 group_id=group_id,
@@ -1083,6 +1109,56 @@ class ClanBattle:
             })
         return report
 
+    def get_clan_daily_challenge_counts(self,
+                                        group_id: Groupid,
+                                        pcrdate: Optional[Pcr_date] = None,
+                                        battle_id: Union[int, None] = None,
+                                        ):
+        """
+        get the records
+
+        Args:
+            group_id: group id
+            battle_id: battle id
+            pcrdate: pcrdate of report
+        """
+        group = Clan_group.get_or_none(group_id=group_id)
+        if group is None:
+            raise GroupNotExist
+        if pcrdate is None:
+            pcrdate = pcr_datetime(group.game_server)[0]
+        if battle_id is None:
+            battle_id = group.battle_id
+        full_challenge_count = 0
+        tailing_challenge_count = 0
+        continued_challenge_count = 0
+        continued_tailing_challenge_count = 0
+        for challenge in Clan_challenge.select().where(
+            Clan_challenge.gid == group_id,
+            Clan_challenge.bid == battle_id,
+            Clan_challenge.challenge_pcrdate == pcrdate,
+        ):
+            if challenge.boss_health_ramain != 0:
+                if challenge.is_continue:
+                    # 剩余刀
+                    continued_challenge_count += 1
+                else:
+                    # 完整刀
+                    full_challenge_count += 1
+            else:
+                if challenge.is_continue:
+                    # 尾余刀
+                    continued_tailing_challenge_count += 1
+                else:
+                    # 尾刀
+                    tailing_challenge_count += 1
+        return (
+            full_challenge_count,
+            tailing_challenge_count,
+            continued_challenge_count,
+            continued_tailing_challenge_count,
+        )
+
     @timed_cached_func(max_len=64, max_age_seconds=10, ignore_self=True)
     def get_battle_member_list(self,
                                group_id: Groupid,
@@ -1228,6 +1304,26 @@ class ClanBattle:
             except ClanBattleError as e:
                 return str(e)
             return boss_summary
+        elif match_num == 27:  # 进度
+            if cmd != '进度':
+                return
+            try:
+                (
+                    full_challenge_count,
+                    tailing_challenge_count,
+                    continued_challenge_count,
+                    continued_tailing_challenge_count,
+                ) = self.get_clan_daily_challenge_counts(group_id)
+            except GroupNotExist as e:
+                return str(e)
+            finished = full_challenge_count + continued_challenge_count
+            unfinished = (tailing_challenge_count
+                          - continued_challenge_count
+                          - continued_tailing_challenge_count)
+            return ("今日进度\n\n"
+                    f"已完成出刀：{finished}\n"
+                    f"未完成的尾刀：{unfinished}\n"
+                    f"未开始的出刀：{90-finished-unfinished}")
         elif match_num == 4:  # 报刀
             match = re.match(
                 r'^报刀 ?(\d+)([Ww万Kk千])? *(?:\[CQ:at,qq=(\d+)\])? *(昨[日天])? *(?:[\:：](.*))?$', cmd)
@@ -1261,16 +1357,17 @@ class ClanBattle:
             except ClanBattleError as e:
                 _logger.info('群聊 失败 {} {} {}'.format(user_id, group_id, cmd))
                 return str(e)
-            if behalf:
-                user_id = match.group(3) and int(match.group(3))
-            group = Clan_group.get_or_none(group_id=group_id)
-            boss_num = group.boss_num
-            counts = self.cancel_subscribe(group_id, user_id, boss_num)
+            # if behalf:
+            #     user_id = match.group(3) and int(match.group(3))
+            # group = Clan_group.get_or_none(group_id=group_id)
+            # boss_num = group.boss_num
+            # counts = self.cancel_subscribe(group_id, user_id, boss_num)
             _logger.info('群聊 成功 {} {} {}'.format(user_id, group_id, cmd))
-            if counts != 0:
-                return str(boss_status) + '\n※已取消该boss的预约'   
-            else:
-                return str(boss_status)
+            return str(boss_status)
+            # if counts != 0:
+            #     return str(boss_status) + '\n※已取消该boss的预约'
+            # else:
+            #     return str(boss_status)
         elif match_num == 5:  # 尾刀
             match = re.match(
                 r'^尾刀 ?(?:\[CQ:at,qq=(\d+)\])? *(昨[日天])? *(?:[\:：](.*))?$', cmd)
@@ -1341,6 +1438,29 @@ class ClanBattle:
             )
             return '请在面板中查看：'+url
         elif match_num == 10:  # 预约
+            if cmd == '预约表':
+                # 查询预约表
+                subscribers = self.get_subscribe_list(
+                    group_id, order_by='subscribe_item')
+                if not subscribers:
+                    return '没有预约记录'
+                reply = "预约表：\n"
+                current_boss = '-1'  # 尚未开始输出结果
+                for sub in subscribers:
+                    if sub['boss'] != current_boss:  # boss 号变化前，显示小标题
+                        if sub['boss'] == 0:
+                            reply += '====挂树====\n'
+                        else:
+                            reply += f"==={sub['boss']}号boss===\n"
+                        current_boss = sub['boss']
+                    reply += self._get_nickname_by_qqid(sub['qqid'])  # 显示昵称
+                    message = sub['message']  # 如果有留言则显示留言
+                    if message:
+                        reply += '：' + message
+                    reply += '\n'
+                reply += '============'  # 结束
+                return reply
+            # 预约 boss
             match = re.match(r'^预约([1-5]) *(?:[\:：](.*))?$', cmd)
             if not match:
                 return
@@ -1417,7 +1537,8 @@ class ClanBattle:
             _logger.info('群聊 成功 {} {} {}'.format(user_id, group_id, cmd))
             return '已取消'+event
         elif match_num == 26:  # 强制取消
-            match = re.match(r'^强制取消(?:预约)?([1-5])? *(?:\[CQ:at,qq=(\d+)\])? *$', cmd)
+            match = re.match(
+                r'^强制取消(?:预约)?([1-5])? *(?:\[CQ:at,qq=(\d+)\])? *$', cmd)
             if match:
                 if ctx['sender']['role'] == 'member':
                     return '只有管理员才可以强制取消'
@@ -1432,10 +1553,12 @@ class ClanBattle:
                     event = f'预约{boss_num}号boss'
                     counts = self.cancel_subscribe(group_id, user_id, boss_num)
                     if counts == 0:
-                        _logger.info('群聊 失败 {} {} {}'.format(user_id, group_id, cmd))
+                        _logger.info('群聊 失败 {} {} {}'.format(
+                            user_id, group_id, cmd))
                         return '{}没有'.format(atqq(user_id)) + event
-                    _logger.info('群聊 成功 {} {} {}'.format(user_id, group_id, cmd))
-                    return '已为{}取消'.format(atqq(user_id)) + event 
+                    _logger.info('群聊 成功 {} {} {}'.format(
+                        user_id, group_id, cmd))
+                    return '已为{}取消'.format(atqq(user_id)) + event
         elif match_num == 14:  # 解锁
             if cmd != '解锁':
                 return
@@ -1458,7 +1581,8 @@ class ClanBattle:
             )
             return f'公会战面板：\n{url}\n建议添加到浏览器收藏夹或桌面快捷方式'
         elif match_num == 16:  # SL
-            match = re.match(r'^(?:SL|sl) *([\?？])? *(?:\[CQ:at,qq=(\d+)\])? *([\?？])? *$', cmd)
+            match = re.match(
+                r'^(?:SL|sl) *([\?？])? *(?:\[CQ:at,qq=(\d+)\])? *([\?？])? *$', cmd)
             if not match:
                 return
             behalf = match.group(2) and int(match.group(2))

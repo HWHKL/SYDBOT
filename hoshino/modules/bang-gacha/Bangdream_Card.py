@@ -2,17 +2,17 @@ import os
 import time
 import random
 import csv
-
+from hoshino import Service, priv, R
 from PIL import Image
-from hoshino import Service, R
 from hoshino.typing import *
 from hoshino.config import RES_DIR
 from hoshino.util import FreqLimiter, DailyNumberLimiter, pic2b64, concat_pic
 
 
-
 csvpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 picpath = os.path.join(os.path.expanduser(RES_DIR), 'img','bangdreampic')
+
+
 
 sv_help = '''
 [邦邦十连 (卡池编号)] 十连抽卡模拟，若未输入卡池编号则随机选取
@@ -20,14 +20,27 @@ sv_help = '''
 [查询邦邦卡池 (卡池编号)] 查询卡池信息
 '''.strip()
 
-sv = Service('bangdream-gacha', help_=sv_help)
+sv = Service(
+    name = '邦邦抽卡',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #是否可见
+    enable_on_default = True, #是否默认启用
+    bundle = '邦邦抽卡', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助邦邦抽卡"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+    
 
 
 EXCEED_NOTICE = f'您今天已经抽过10000星石了，请明早5点后再来~'
-EXCEED_NOTICE2 = f'您今天已经抽过一井了，请明早5点后再来~'
+EXCEED_NOTICE2 = f'您今天已经抽过三井了，请明早5点后再来~'
 
 _nlmt = DailyNumberLimiter(4)
-_tlmt = DailyNumberLimiter(1)
+_tlmt = DailyNumberLimiter(3)
 
 _flmt = FreqLimiter(10)
 

@@ -1,14 +1,32 @@
 from hoshino.typing import CQEvent
-from hoshino import Service
+from hoshino import Service, priv
 from .config import *
 from .chara import *
 from . import _data
 import math, sqlite3, os, random, asyncio, hoshino
 from nonebot import MessageSegment
 
-sv = Service('fgoavatarguess', help_='''
+
+sv_help = '''
 猜从者 | 猜猜机器人随机发送的头像的一小部分来自哪位角色
-'''.strip())
+'''.strip()
+
+sv = Service(
+    name = '猜从者',  #功能名
+    use_priv = priv.NORMAL, #使用权限   
+    manage_priv = priv.ADMIN, #管理权限
+    visible = True, #False隐藏
+    enable_on_default = True, #是否默认启用
+    bundle = '娱乐', #属于哪一类
+    help_ = sv_help #帮助文本
+    )
+
+@sv.on_fullmatch(["帮助猜从者"])
+async def bangzhu(bot, ev):
+    await bot.send(ev, sv_help, at_sender=True)
+
+
+
 
 BLACKLIST_ID = [1000]
 PIC_SIDE_LENGTH = 36

@@ -11,7 +11,7 @@ class auth_config(object):
     ENABLE_WEB = True
 
     # WEB管理密码, 推荐使用强密码
-    PASSWORD = 'qq558822'
+    PASSWORD = ''
 
 
     # -------------------事件过滤器---------------------
@@ -87,7 +87,6 @@ Bot即将退出本群
     REMIND_MSG = '''
     本群授权要到期啦！
     请联系维护组续费
-    主人qq：1289641558
     '''.strip()
 
     REG_HELP_GROUP = '''

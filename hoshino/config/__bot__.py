@@ -9,9 +9,9 @@ DEBUG = False           # 调试模式,不建议开启
 SUPERUSERS = [1289641558]    # 填写超级用户的QQ号，可填多个用半角逗号","隔开
 ###################################
 
-NICKNAME = r'xcw|小仓唯|镜华|at,qq=2417894262'           # 设置bot的昵称，at，qq=xxxxxxxx处为bot的QQ号,呼叫昵称等同@bot,推荐修改
-IP = '49.235.232.196'                                      #修改为你的服务器ip,推荐修改
-public_address = '49.235.232.196:9222'                     #修改为你的服务器ip+端口,推荐修改
+NICKNAME = r'xcw|小仓唯|镜华|at,qq='           # 设置bot的昵称，at，qq=xxxxxxxx处为bot的QQ号,呼叫昵称等同@bot,推荐修改
+IP = ''                                      #修改为你的服务器ip,推荐修改
+public_address = ''                     #修改为你的服务器ip+端口,推荐修改
 BOTNAME = 'xcw'
 ###################################
 
@@ -23,14 +23,14 @@ shitu_api,相关插件shitu,申请地址http://saucenao.com/
 jjc_api,相关插件arena,申请地址https://www.pcrdfans.com/bot
 tenxun_api,相关插件aichat,申请地址https://ai.qq.com/,已经为你默认准备了一个,但建议自行申请进行个性定制
 '''
-lolicon_api = '566119635f7c58b3eb7a57'                                        
-acggov_api = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJIV0hLTCIsInV1aWQiOiJiYmRkNjcyOWQ4NjQ0MmZlYTRiMWJkMDdhMTk2ZDQyYyIsImlhdCI6MTU5OTE5ODM2MywiYWNjb3VudCI6IntcImVtYWlsXCI6XCIxMjg5NjQxNTU4QHFxLmNvbVwiLFwiZ2VuZGVyXCI6LTEsXCJoYXNQcm9uXCI6MCxcImlkXCI6MTIwLFwicGFzc1dvcmRcIjpcIjBjZDAyYTcwNGI4M2I4ZmVmMDY5YjQxM2IxMjliYWZlXCIsXCJzdGF0dXNcIjowLFwidXNlck5hbWVcIjpcIkhXSEtMXCJ9IiwianRpIjoiMTIwIn0.xfLZXGJdFnylLrKB8UVAfgG8g61SGakPqW40BiMUPGU' 
-shitu_api = '2055a02a459cccebe3a52bad44235769a5053f60'                                           
+lolicon_api = ''                                        
+acggov_api = '' 
+shitu_api = ''                                           
 jjc_api = ""
-SAUCENAO_KEY = "2055a02a459cccebe3a52bad44235769a5053f60" # SauceNAO 的 API key
-baidu_api_ID = '22897340'    
-baidu_api_KEY = 'BwNDffKaheR3T6gLG7Rop6Aq'
-baidu_api_SECRET = 'HZHRrazmuAe6FsubWv0L2ZPeQwKN9z1B'    
+SAUCENAO_KEY = "" # SauceNAO 的 API key
+baidu_api_ID = ''    
+baidu_api_KEY = ''
+baidu_api_SECRET = ''    
                            
 ###################################
 
@@ -118,4 +118,4 @@ MODULES_ON = {
     
     
 }
-version = 'xcw综合版_0.02beta'
+version = 'xcw'
